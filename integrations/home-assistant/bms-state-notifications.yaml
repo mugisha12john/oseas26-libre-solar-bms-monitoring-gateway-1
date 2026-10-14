@@ -1,0 +1,72 @@
+blueprint:
+  name: Libre Solar BMS state notifications
+  description: >-
+    Notify when a battery changes between NORMAL, LOW_SOC, WARNING, and FAULT,
+    including a return to NORMAL. Repeated telemetry, attribute-only updates,
+    first initialization, and unknown/unavailable transitions do not notify.
+    One Home Assistant notification per battery is updated with the latest
+    transition. Optional actions can also deliver to Companion phones or email.
+  domain: automation
+  input:
+    bms_state_entity:
+      name: Battery BMS state sensor
+      description: Select the discovered BMS State sensor, not the online binary sensor.
+      selector:
+        entity:
+          domain: sensor
+    battery_label:
+      name: Battery and site label
+      default: Libre Solar BAT-001 (site-001)
+      selector:
+        text: {}
+    additional_notifications:
+      name: Optional phone or email actions
+      description: >-
+        Leave empty for Home Assistant notifications only. Add notification
+        actions using title {{ notification_title }} and message
+        {{ notification_message }}. Configure each destination in Home Assistant
+        first. Use continue_on_error on independent delivery actions.
+      default: []
+      selector:
+        action: {}
+
+triggers:
+  - trigger: state
+    entity_id: !input bms_state_entity
+    to: null
+
+conditions:
+  - condition: template
+    value_template: >-
+      {{ trigger.from_state is not none
+         and trigger.to_state is not none
+         and trigger.from_state.state in ['NORMAL', 'LOW_SOC', 'WARNING', 'FAULT']
+         and trigger.to_state.state in ['NORMAL', 'LOW_SOC', 'WARNING', 'FAULT']
+         and trigger.from_state.state != trigger.to_state.state }}
+
+actions:
+  - variables:
+      battery_label: !input battery_label
+  - variables:
+      notification_title: "{{ battery_label }}: {{ trigger.to_state.state }}"
+      notification_message: >-
+        {{ battery_label }} changed from {{ trigger.from_state.state }} to
+        {{ trigger.to_state.state }} at
+        {{ as_local(trigger.to_state.last_changed).strftime('%Y-%m-%d %H:%M:%S %Z') }}.
+        {% if trigger.to_state.state == 'NORMAL' %}
+        Current measurements are back within the simulator's normal range.
+        Stored MPM faults remain in history and require separate review.
+        {% else %}
+        Review battery temperature, cell voltages, imbalance, and error flags
+        in the battery dashboard and MPM fault history.
+        {% endif %}
+  - action: persistent_notification.create
+    data:
+      notification_id: "libre_solar_bms_{{ trigger.entity_id | replace('.', '_') }}"
+      title: "{{ notification_title }}"
+      message: "{{ notification_message }}"
+  - choose: []
+    default: !input additional_notifications
+
+mode: queued
+max: 100

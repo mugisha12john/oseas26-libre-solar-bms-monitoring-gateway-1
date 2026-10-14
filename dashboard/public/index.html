@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Libre Solar Battery Monitor</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <h1>Libre Solar Battery Monitor</h1>
+          <p>
+            Site: <strong id="site-id">site-001</strong>
+            <span class="divider">•</span>
+            Battery: <strong id="battery-id">BAT-001</strong>
+          </p>
+        </div>
+        <div class="status-cluster">
+          <span id="online-indicator" class="status-dot online"></span>
+          <span id="status-text">ONLINE</span>
+          <span class="muted"
+            >Last updated: <span id="last-updated">--</span></span
+          >
+        </div>
+      </header>
+
+      <section class="kpi-grid">
+        <article class="card kpi-card">
+          <span class="label">SOC</span>
+          <strong id="soc-value">--</strong>
+        </article>
+        <article class="card kpi-card">
+          <span class="label">Voltage</span>
+          <strong id="voltage-value">--</strong>
+        </article>
+        <article class="card kpi-card">
+          <span class="label">Current</span>
+          <strong id="current-value">--</strong>
+        </article>
+        <article class="card kpi-card power-card">
+          <span class="label">Power</span>
+          <strong id="power-value">--</strong>
+        </article>
+        <article class="card kpi-card">
+          <span class="label">Temperature</span>
+          <strong id="temperature-value">--</strong>
+        </article>
+        <article class="card kpi-card accent">
+          <span class="label">BMS State</span>
+          <strong id="state-value" class="state-value normal">--</strong>
+        </article>
+      </section>
+
+      <section class="content-grid">
+        <article class="card chart-panel">
+          <div class="panel-header">
+            <h2>Battery History</h2>
+            <div class="segmented" id="series-selectors">
+              <button class="active" data-series="soc">SOC</button>
+              <button data-series="voltage">Voltage</button>
+              <button data-series="current">Current</button>
+              <button data-series="temperature">Temperature</button>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <svg
+              id="history-chart"
+              viewBox="0 0 600 220"
+              preserveAspectRatio="none"
+            ></svg>
+            <div
+              id="chart-tooltip"
+              class="chart-tooltip"
+              role="status"
+              hidden
+            ></div>
+          </div>
+        </article>
+
+        <article class="card cell-panel">
+          <div class="panel-header">
+            <h2>Cell Monitoring</h2>
+          </div>
+          <div id="cell-bars" class="cell-bars"></div>
+          <div class="stats-grid">
+            <div><span>Min Cell</span><strong id="min-cell">--</strong></div>
+            <div><span>Max Cell</span><strong id="max-cell">--</strong></div>
+            <div>
+              <span>Average Cell</span><strong id="avg-cell">--</strong>
+            </div>
+            <div>
+              <span>Imbalance</span><strong id="imbalance-cell">--</strong>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="bottom-grid">
+        <article class="card health-panel">
+          <div class="panel-header">
+            <h2>Battery Health</h2>
+          </div>
+          <div class="stats-grid health-grid">
+            <div>
+              <span>Cycle Count</span><strong id="cycle-count">--</strong>
+            </div>
+            <div>
+              <span>Min Cell Voltage</span><strong id="health-min">--</strong>
+            </div>
+            <div>
+              <span>Max Cell Voltage</span><strong id="health-max">--</strong>
+            </div>
+            <div>
+              <span>Cell Imbalance</span
+              ><strong id="health-imbalance">--</strong>
+            </div>
+            <div>
+              <span>Max Temperature</span><strong id="health-temp">--</strong>
+            </div>
+            <div>
+              <span>BMS State</span><strong id="health-state">--</strong>
+            </div>
+            <div>
+              <span>Balancing</span><strong id="balancing-state">--</strong>
+            </div>
+            <div><span>SOH</span><strong>Not calculated</strong></div>
+          </div>
+        </article>
+
+        <article class="card events-panel">
+          <div class="panel-header">
+            <h2>Events</h2>
+          </div>
+          <ul id="event-list" class="event-list"></ul>
+        </article>
+      </section>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,197 @@
+title: Libre Solar Battery
+views:
+  - title: Battery Overview
+    path: libre-solar-battery
+    icon: mdi:battery
+    type: sections
+    max_columns: 2
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Battery Overview
+            heading_style: title
+          - type: tile
+            entity: sensor.libre_solar_bat_001_battery_soc
+            name: State of Charge
+            icon: mdi:battery-medium
+            color: green
+            features_position: bottom
+          - type: tile
+            entity: sensor.libre_solar_bat_001_pack_voltage
+            name: Pack Voltage
+            icon: mdi:flash
+            color: blue
+          - type: tile
+            entity: sensor.libre_solar_bat_001_pack_current
+            name: Pack Current
+            icon: mdi:current-dc
+            color: amber
+          - type: tile
+            entity: sensor.libre_solar_bat_001_battery_power
+            name: Power
+            icon: mdi:lightning-bolt
+            color: teal
+          - type: tile
+            entity: sensor.libre_solar_bat_001_battery_temperature
+            name: Battery Temperature
+            icon: mdi:thermometer
+            color: orange
+          - type: tile
+            entity: sensor.libre_solar_bat_001_bms_state
+            name: BMS State
+            icon: mdi:shield-check
+            color: green
+          - type: conditional
+            conditions:
+              - entity: sensor.libre_solar_bat_001_bms_state
+                state: WARNING
+            card:
+              type: markdown
+              title: Warning requires attention
+              content: >-
+                The BMS is reporting **WARNING**. Check temperature, cell
+                imbalance, voltage, and recent events before continuing normal
+                operation.
+          - type: conditional
+            conditions:
+              - entity: sensor.libre_solar_bat_001_bms_state
+                state: LOW_SOC
+            card:
+              type: markdown
+              title: Low state of charge
+              content: >-
+                The battery is below its SOC warning threshold. Review load and
+                charging availability.
+          - type: conditional
+            conditions:
+              - entity: sensor.libre_solar_bat_001_bms_state
+                state: FAULT
+            card:
+              type: markdown
+              title: BMS fault
+              content: >-
+                Stop and inspect the battery protection condition before
+                returning it to service.
+          - type: conditional
+            conditions:
+              - entity: sensor.libre_solar_bat_001_bms_state
+                state: unavailable
+            card:
+              type: markdown
+              title: Battery offline
+              content: >-
+                No current BMS state is available. Check the simulator,
+                gateway, MQTT broker, and battery connection.
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Battery History
+            heading_style: title
+          - type: history-graph
+            title: SOC and Pack Voltage
+            hours_to_show: 24
+            entities:
+              - entity: sensor.libre_solar_bat_001_battery_soc
+                name: SOC
+              - entity: sensor.libre_solar_bat_001_pack_voltage
+                name: Pack Voltage
+          - type: history-graph
+            title: Current and Temperature
+            hours_to_show: 24
+            entities:
+              - entity: sensor.libre_solar_bat_001_pack_current
+                name: Pack Current
+              - entity: sensor.libre_solar_bat_001_battery_temperature
+                name: Temperature
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Cell Monitoring
+            heading_style: title
+          - type: entities
+            title: Individual Cells
+            show_header_toggle: false
+            entities:
+              - entity: sensor.libre_solar_bat_001_cell_1_voltage
+                name: Cell 1
+              - entity: sensor.libre_solar_bat_001_cell_2_voltage
+                name: Cell 2
+              - entity: sensor.libre_solar_bat_001_cell_3_voltage
+                name: Cell 3
+              - entity: sensor.libre_solar_bat_001_cell_4_voltage
+                name: Cell 4
+          - type: entities
+            title: Cell Summary
+            show_header_toggle: false
+            entities:
+              - entity: sensor.libre_solar_bat_001_minimum_cell_voltage
+                name: Minimum Cell Voltage
+              - entity: sensor.libre_solar_bat_001_maximum_cell_voltage
+                name: Maximum Cell Voltage
+              - entity: sensor.libre_solar_bat_001_average_cell_voltage
+                name: Average Cell Voltage
+              - entity: sensor.libre_solar_bat_001_cell_imbalance
+                name: Cell Imbalance
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Battery Health
+            heading_style: title
+          - type: gauge
+            entity: sensor.libre_solar_bat_001_battery_soc
+            name: State of Charge
+            min: 0
+            max: 100
+            severity:
+              green: 50
+              yellow: 25
+              red: 0
+          - type: entities
+            show_header_toggle: false
+            entities:
+              - entity: sensor.libre_solar_bat_001_cycle_count
+                name: Cycle Count
+              - entity: sensor.libre_solar_bat_001_battery_temperature
+                name: Battery Temperature
+              - entity: sensor.libre_solar_bat_001_cell_imbalance
+                name: Cell Imbalance
+              - entity: sensor.libre_solar_bat_001_bms_state
+                name: BMS State
+              - entity: binary_sensor.libre_solar_bat_001_balancing
+                name: Balancing
+          - type: markdown
+            title: SOH
+            content: SOH is not calculated by the current BMS simulator.
+
+      - type: grid
+        cards:
+          - type: heading
+            heading: Events and State Changes
+            heading_style: title
+          - type: logbook
+            title: Battery State History
+            hours_to_show: 24
+            entities:
+              - sensor.libre_solar_bat_001_bms_state
+              - binary_sensor.libre_solar_bat_001_balancing
+          - type: history-graph
+            title: Risk Signals
+            hours_to_show: 24
+            entities:
+              - entity: sensor.libre_solar_bat_001_bms_state
+                name: BMS State
+              - entity: sensor.libre_solar_bat_001_battery_temperature
+                name: Temperature
+              - entity: sensor.libre_solar_bat_001_cell_imbalance
+                name: Cell Imbalance
+          - type: markdown
+            title: MQTT Event Stream
+            content: >-
+              Raw events remain available on
+              `libre-solar/site-001/BAT-001/event`. The current repository does
+              not expose that topic as a dedicated Home Assistant event entity,
+              so the logbook above shows discovered state changes.

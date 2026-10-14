@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://libre-solar.org/schemas/control/1.0",
+  "title": "Libre Solar simulator control command",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "command", "value"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "command": { "enum": ["SET_SCENARIO", "SET_TIME_SCALE"] },
+    "value": {}
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "command": { "const": "SET_SCENARIO" } } },
+      "then": {
+        "properties": {
+          "value": {
+            "enum": [
+              "NORMAL",
+              "CHARGING",
+              "DISCHARGING",
+              "LOW_SOC",
+              "HIGH_TEMPERATURE",
+              "CELL_IMBALANCE",
+              "OVER_CURRENT",
+              "UNDER_VOLTAGE",
+              "FAULT",
+              "RECOVERY"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "command": { "const": "SET_TIME_SCALE" } } },
+      "then": {
+        "properties": {
+          "value": { "type": "number", "exclusiveMinimum": 0 }
+        }
+      }
+    }
+  ]
+}

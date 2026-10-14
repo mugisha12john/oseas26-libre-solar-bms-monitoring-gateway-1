@@ -1,0 +1,31 @@
+services:
+  mysql:
+    restart: unless-stopped
+  backend:
+    image: libre-solar-mpm-backend:local
+    build:
+      context: ${MPM_SOURCE_DIR:?Set MPM_SOURCE_DIR to the absolute micropowermanager path}
+      dockerfile: ${GATEWAY_SOURCE_DIR:?Set GATEWAY_SOURCE_DIR to the absolute gateway path}/integrations/mpm/Dockerfile.runtime
+      args:
+        RUNTIME_IMAGE: enaccess/micropowermanager-backend:latest
+    environment:
+      MPM_LOAD_DEMO_DATA: "false"
+  frontend:
+    image: libre-solar-mpm-frontend:local
+    build:
+      context: ${MPM_SOURCE_DIR:?Set MPM_SOURCE_DIR to the absolute micropowermanager path}
+      dockerfile: docker/DockerfileFrontendProd
+  scheduler:
+    image: libre-solar-mpm-scheduler:local
+    build:
+      context: ${MPM_SOURCE_DIR:?Set MPM_SOURCE_DIR to the absolute micropowermanager path}
+      dockerfile: ${GATEWAY_SOURCE_DIR:?Set GATEWAY_SOURCE_DIR to the absolute gateway path}/integrations/mpm/Dockerfile.runtime
+      args:
+        RUNTIME_IMAGE: enaccess/micropowermanager-scheduler:latest
+  worker:
+    image: libre-solar-mpm-worker:local
+    build:
+      context: ${MPM_SOURCE_DIR:?Set MPM_SOURCE_DIR to the absolute micropowermanager path}
+      dockerfile: ${GATEWAY_SOURCE_DIR:?Set GATEWAY_SOURCE_DIR to the absolute gateway path}/integrations/mpm/Dockerfile.runtime
+      args:
+        RUNTIME_IMAGE: enaccess/micropowermanager-queue-worker:latest

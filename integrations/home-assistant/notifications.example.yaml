@@ -1,0 +1,9 @@
+- id: libre_solar_bat_001_state_notifications
+  alias: Libre Solar BAT-001 state notifications
+  description: Report each actual BMS state change, including recovery to NORMAL.
+  use_blueprint:
+    path: libre_solar/bms-state-notifications.yaml
+    input:
+      bms_state_entity: sensor.libre_solar_bat_001_bms_state
+      battery_label: Libre Solar BAT-001 (site-001)
+      additional_notifications: []

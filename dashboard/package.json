@@ -1,0 +1,21 @@
+{
+  "name": "libre-solar-bms-dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/server.ts",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "mqtt": "^5.16.0",
+    "ws": "^8.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "@types/ws": "^8.18.2",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.3"
+  }
+}

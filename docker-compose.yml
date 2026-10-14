@@ -1,0 +1,75 @@
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mqtt/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - mosquitto-data:/mosquitto/data
+      - mosquitto-log:/mosquitto/log
+    restart: unless-stopped
+
+  simulator:
+    build:
+      context: .
+      dockerfile: simulator/Dockerfile
+    environment:
+      MQTT_HOST: ${MQTT_HOST:-mosquitto}
+      MQTT_PORT: ${MQTT_PORT:-1883}
+      SITE_ID: ${SITE_ID:-site-001}
+      BATTERY_ID: ${BATTERY_ID:-BAT-001}
+      SIMULATOR_SCENARIO: ${SIMULATOR_SCENARIO:-NORMAL}
+      PUBLISH_INTERVAL_SECONDS: ${PUBLISH_INTERVAL_SECONDS:-1}
+    depends_on:
+      - mosquitto
+    restart: unless-stopped
+
+  mpm-bridge:
+    build:
+      context: .
+      dockerfile: integrations/mpm-bridge/Dockerfile
+    environment:
+      MQTT_HOST: ${MQTT_HOST:-mosquitto}
+      MQTT_PORT: ${MQTT_PORT:-1883}
+      MQTT_USERNAME: ${MQTT_USERNAME:-}
+      MQTT_PASSWORD: ${MQTT_PASSWORD:-}
+      MPM_BASE_URL: ${MPM_BASE_URL:-http://host.docker.internal:8000}
+      MPM_API_KEY: ${MPM_API_KEY:-}
+      MPM_INTERVAL_SECONDS: ${MPM_INTERVAL_SECONDS:-60}
+      MPM_MAX_RETRIES: ${MPM_MAX_RETRIES:-4}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - mosquitto
+    restart: unless-stopped
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: dashboard/Dockerfile
+    environment:
+      MQTT_HOST: ${MQTT_HOST:-mosquitto}
+      MQTT_PORT: ${MQTT_PORT:-1883}
+      DASHBOARD_PORT: ${DASHBOARD_PORT:-3000}
+      OFFLINE_TIMEOUT_MS: ${OFFLINE_TIMEOUT_MS:-15000}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mosquitto
+    restart: unless-stopped
+
+volumes:
+  mosquitto-data:
+  mosquitto-log:
+
+  # homeassistant:
+  #   container_name: homeassistant
+  #   image: ghcr.io/home-assistant/home-assistant:stable
+  #   restart: unless-stopped
+  #   privileged: true
+  #   network_mode: host
+  #   environment:
+  #     - TZ=Africa/Kigali
+  #   volumes:
+  #     - /home/mugisha-buban/homeassistant:/config
+  #     - /run/dbus:/run/dbus:ro

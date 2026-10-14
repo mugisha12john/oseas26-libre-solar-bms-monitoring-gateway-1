@@ -1,0 +1,11 @@
+ARG RUNTIME_IMAGE
+FROM ${RUNTIME_IMAGE}
+
+WORKDIR /var/www/html
+COPY src/backend/composer.lock /tmp/local-composer.lock
+# Reuse installed dependencies only when they exactly match the checkout.
+RUN cmp composer.lock /tmp/local-composer.lock
+RUN rm -rf app bootstrap config database routes public resources tests
+COPY src/backend/ /var/www/html/
+RUN composer dump-autoload --no-dev --optimize --no-scripts \
+    && php artisan package:discover --ansi

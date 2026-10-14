@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://libre-solar.org/schemas/telemetry/1.0",
+  "title": "Libre Solar canonical BMS telemetry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "battery_id",
+    "site_id",
+    "timestamp",
+    "battery",
+    "cells",
+    "bms"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "battery_id": { "type": "string", "minLength": 1 },
+    "site_id": { "type": "string", "minLength": 1 },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$"
+    },
+    "battery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pack_voltage_v",
+        "pack_current_a",
+        "power_w",
+        "soc_pct",
+        "temperature_c",
+        "soh_percent",
+        "cycle_count"
+      ],
+      "properties": {
+        "pack_voltage_v": { "type": "number", "minimum": 0 },
+        "pack_current_a": { "type": "number" },
+        "power_w": { "type": "number" },
+        "soc_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+        "temperature_c": { "type": "number" },
+        "soh_percent": { "type": "number", "minimum": 0, "maximum": 100 },
+        "cycle_count": { "type": "integer", "minimum": 0 },
+        "cycles": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "cells": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "voltages_v",
+        "min_voltage_v",
+        "max_voltage_v",
+        "avg_voltage_v",
+        "imbalance_v"
+      ],
+      "properties": {
+        "voltages_v": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "number", "minimum": 0 }
+        },
+        "min_voltage_v": { "type": "number", "minimum": 0 },
+        "max_voltage_v": { "type": "number", "minimum": 0 },
+        "avg_voltage_v": { "type": "number", "minimum": 0 },
+        "imbalance_v": { "type": "number", "minimum": 0 }
+      }
+    },
+    "bms": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "balancing", "error_flags"],
+      "properties": {
+        "state": { "enum": ["NORMAL", "LOW_SOC", "WARNING", "FAULT"] },
+        "balancing": { "type": "boolean" },
+        "error_flags": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}
