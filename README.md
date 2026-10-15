@@ -7,7 +7,6 @@ It demonstrates how battery measurements and faults can reach both local users a
 The real ThingSet transport adapter and the Prospect adapter are planned.
 The MPM battery API and screens live in a separate MPM checkout; this repository contains the bridge and deployment overlay.
 
-For a three-minute demonstration, narration, recording instructions, and a five-minute presentation plan, see [script.md](script.md).
 
 ## Contents
 
@@ -22,8 +21,7 @@ For a three-minute demonstration, narration, recording instructions, and a five-
 - [Development and tests](#development-and-tests)
 - [Troubleshooting](#troubleshooting)
 - [Stop and restart](#stop-and-restart)
-- [What makes this project distinctive](#what-makes-this-project-distinctive)
-- [Limitations and next steps](#limitations-and-next-steps)
+- [Next steps](#next-steps)
 - [Project map and references](#project-map-and-references)
 
 ## What is implemented
@@ -121,14 +119,7 @@ Use those guides to obtain the platforms, then follow the project-specific integ
 Both platforms can run locally; downloads/builds require internet initially.
 This prototype's local MQTT/HTTP path does not depend on a hosted cloud service, although reliable delivery through outages is not implemented.
 
-### Obtain the MPM version containing our changes
 
-The official MPM installation guide does not establish that prebuilt images contain this project's battery extension.
-The local MPM checkout inspected for this documentation is commit `7fb60e7c` (`feat: integrate Libre Solar battery health and live battery views`).
-Use a checkout or archive that includes that implementation, not an unrelated upstream version.
-
-**Team MPM integration source download: `MPM_DOWNLOAD_URL` — replace this placeholder with the tested team repository/branch or ZIP link when it is published.**
-The [upstream MPM repository](https://github.com/EnAccess/micropowermanager) remains the platform reference; its public contents have not been verified to include the team's commit.
 
 Extract the MPM download as a sibling directory named `micropowermanager`:
 
@@ -658,30 +649,8 @@ Gateway-only restarts can use `docker compose up -d mosquitto simulator dashboar
 Keep using the source overlay when rebuilding/recreating MPM applications.
 Do not use `docker compose down -v` or database reset commands to troubleshoot stored data.
 
-## What makes this project distinctive
 
-The strongest defensible positioning is:
-
-> One battery data contract connects local monitoring to operator workflows, with detailed cell visibility, immediate fault forwarding, and controlled business-system updates.
-
-| Strength | Evidence to show | Practical value |
-| --- | --- | --- |
-| One shared contract across consumers | Same battery ID/topic feeding dashboard, HA, and MPM bridge; JSON schemas | New consumers can reuse the producer's format |
-| Different update needs handled deliberately | One-second MQTT telemetry, default 60-second MPM summaries, interval maximum temperature, immediate event path | Business storage receives summaries while local monitoring stays responsive |
-| Cell-level visibility connected to fault history | Diverging cell chart, balancing/state change, MPM fault evidence | Operators can relate a fault to measurements rather than only seeing a charge percentage |
-| Integration into an existing operator platform | MPM Batteries list/detail, company-scoped database, separate browser/integration authentication | Monitoring appears inside the platform used to manage assets |
-| Repeatable demonstration without hardware | Ten scenarios and schema/discovery/mapping tests | Teams can reproduce faults and demonstrations before hardware integration |
-
-At the defaults, one sample per second produces about 60 telemetry messages per minute, while normal MPM health writes are approximately one per minute: about 98.3% fewer routine health-write opportunities than forwarding every sample.
-This is configuration arithmetic, not a measured network-bandwidth, energy, or storage benchmark; event-triggered flushes, offline writes, and retries add requests.
-The full MQTT stream still travels to the local broker.
-
-These are implemented strengths, not proof that no other challenge team has them.
-Without reviewing the other submissions, avoid claiming “first,” “only,” or “best.”
-Prove the combination on screen and connect it to a clear operator benefit.
-See [script.md](script.md#how-to-answer-what-is-unique-about-your-project) for a concise pitch and judge questions.
-
-## Limitations and next steps
+## Next steps
 
 - **Hardware:** `gateway/` is a placeholder for ThingSet over Wi-Fi or UART/Cicada; no physical BMS connection is implemented.
 - **Battery health:** `soh_percent` is simulated as `max(0, 100 - cycle_count * 0.02)` and forwarded to MPM; it is not a validated health estimate. The gateway UI says “Not calculated,” and Home Assistant has no SOH discovery entity.
