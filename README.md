@@ -679,7 +679,7 @@ Prioritize a real hardware adapter, durable fault delivery/deduplication, consis
 | `scripts/run-systems.sh` | Combined startup for configured projects |
 | `scripts/inspect-mpm.sh`, `scripts/watch-mpm.mjs` | Container inspection and MQTT/API comparison |
 | `gateway/`, `integrations/prospect/` | Notes for planned adapters |
-| `docs/`, `team.md` | Contract, architecture, deployment, and team guides |
-| `script.md` | Recording preparation, timed narration, and presentation positioning |
+| `docs/` | Contract, architecture |
 
-Read the [MQTT specification](docs/MQTT_SPECIFICATION.md), [team guide](team.md), [architecture](docs/ARCHITECTURE.md), [deployment notes](docs/DEPLOYMENT.md), and [MPM troubleshooting](integrations/mpm/TROUBLESHOOTING.md) for details.
+
+Read the [MQTT specification](docs/MQTT_SPECIFICATION.md) for details.
